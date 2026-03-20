@@ -1,20 +1,21 @@
 package dev.sorn.orc.tools
 
-import spock.lang.Specification
+import dev.sorn.orc.OrcSpecification
 import spock.lang.TempDir
 
 import java.nio.file.Path
 
+import static dev.sorn.orc.tools.ListDirectoryContentsTool.LIST_DIRECTORY_CONTENTS_TOOL_ID
 import static java.nio.file.Files.createFile
 
-class ListDirectoryContentsToolSpec extends Specification {
+class ListDirectoryContentsToolSpec extends OrcSpecification {
 
     @TempDir
     Path tempDir
 
     def "returns directory contents list"() {
         given:
-        def tool = new ListDirectoryContentsTool()
+        def tool = toolRegistry.get(LIST_DIRECTORY_CONTENTS_TOOL_ID)
 
         and:
         createFile(tempDir.resolve("a.txt"))
@@ -37,7 +38,7 @@ class ListDirectoryContentsToolSpec extends Specification {
 
     def "returns empty list for empty directory"() {
         given:
-        def tool = new ListDirectoryContentsTool()
+        def tool = toolRegistry.get(LIST_DIRECTORY_CONTENTS_TOOL_ID)
 
         when:
         def result = tool.execute(tempDir)
@@ -52,7 +53,7 @@ class ListDirectoryContentsToolSpec extends Specification {
 
     def "returns error for non existing directory"() {
         given:
-        def tool = new ListDirectoryContentsTool()
+        def tool = toolRegistry.get(LIST_DIRECTORY_CONTENTS_TOOL_ID)
         def missing = tempDir.resolve("some_invalid_path")
 
         when:
@@ -71,7 +72,7 @@ class ListDirectoryContentsToolSpec extends Specification {
 
     def "returns error when path is not a directory"() {
         given:
-        def tool = new ListDirectoryContentsTool()
+        def tool = toolRegistry.get(LIST_DIRECTORY_CONTENTS_TOOL_ID)
         def file = createFile(tempDir.resolve("not_a_dir.txt"))
 
         when:

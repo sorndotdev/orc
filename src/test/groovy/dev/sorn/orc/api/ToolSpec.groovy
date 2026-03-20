@@ -1,11 +1,12 @@
 package dev.sorn.orc.api
 
+import dev.sorn.orc.OrcSpecification
 import dev.sorn.orc.types.Result
-import spock.lang.Specification
+import dev.sorn.orc.types.ToolId
 
 import static dev.sorn.orc.types.Result.ok
 
-class ToolSpec extends Specification {
+class ToolSpec extends OrcSpecification {
 
     def "calls no-arg execute on Void Tool"() {
         given:
@@ -33,6 +34,11 @@ class ToolSpec extends Specification {
 
     static class VoidTool implements Tool<Void, String> {
         @Override
+        ToolId id() {
+            return ToolId.of("test_void_tool")
+        }
+
+        @Override
         Result<String> execute(Void input) {
             return ok("ok")
         }
@@ -44,6 +50,11 @@ class ToolSpec extends Specification {
     }
 
     static class NonVoidTool implements Tool<String, String> {
+        @Override
+        ToolId id() {
+            return ToolId.of("test_non_void_tool")
+        }
+
         @Override
         Result<String> execute(String input) {
             return ok(input)

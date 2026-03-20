@@ -1,8 +1,11 @@
 package dev.sorn.orc.api;
 
 import dev.sorn.orc.types.Result;
+import dev.sorn.orc.types.ToolId;
 
 public interface Tool<I, O> {
+
+    ToolId id();
 
     default Result<O> execute() {
         if (!Void.class.equals(inputType())) {
