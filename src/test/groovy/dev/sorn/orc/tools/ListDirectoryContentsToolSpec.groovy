@@ -1,6 +1,7 @@
 package dev.sorn.orc.tools
 
 import dev.sorn.orc.OrcSpecification
+import dev.sorn.orc.errors.OrcException
 import spock.lang.TempDir
 
 import java.nio.file.Path
@@ -25,15 +26,10 @@ class ListDirectoryContentsToolSpec extends OrcSpecification {
         def result = tool.execute(tempDir)
 
         then:
-        result.isOk()
-        with(result.get()) { r ->
-            r.containsAll(["a.txt", "b.txt"])
-            r.size() == 2
-        }
-
-        and:
-        !result.isEmpty()
-        !result.isError()
+        result.fold(value -> {
+            assert value.containsAll(["a.txt", "b.txt"])
+            value.size() == 2
+        }, {}, {})
     }
 
     def "returns empty list for empty directory"() {
@@ -44,11 +40,7 @@ class ListDirectoryContentsToolSpec extends OrcSpecification {
         def result = tool.execute(tempDir)
 
         then:
-        result.isEmpty()
-
-        and:
-        !result.isOk()
-        !result.isError()
+        result.fold({ false }, { false }, { true })
     }
 
     def "returns error for non existing directory"() {
@@ -60,14 +52,10 @@ class ListDirectoryContentsToolSpec extends OrcSpecification {
         def result = tool.execute(missing)
 
         then:
-        result.isError()
-        with(result.getError()) { err ->
-            err.getMessage() == "dev.sorn.orc.errors.Error: '${tempDir.toString()}/some_invalid_path' directory not found"
-        }
-
-        and:
-        !result.isOk()
-        !result.isEmpty()
+        result.fold({}, err -> {
+            err instanceof OrcException
+            err.getMessage() == "dev.sorn.orc.errors.OrcException: '${tempDir.toString()}/some_invalid_path' directory not found"
+        }, {})
     }
 
     def "returns error when path is not a directory"() {
@@ -79,14 +67,10 @@ class ListDirectoryContentsToolSpec extends OrcSpecification {
         def result = tool.execute(file)
 
         then:
-        result.isError()
-        with(result.getError()) { err ->
-            err.getMessage() == "dev.sorn.orc.errors.Error: '${file.toString()}' is not a directory"
-        }
-
-        and:
-        !result.isOk()
-        !result.isEmpty()
+        result.fold({}, err -> {
+            err instanceof OrcException
+            err.getMessage() == "dev.sorn.orc.errors.OrcException: '${file.toString()}' is not a directory"
+        }, {})
     }
 
 }

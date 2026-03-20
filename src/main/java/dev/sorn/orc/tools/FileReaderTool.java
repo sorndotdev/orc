@@ -2,19 +2,21 @@ package dev.sorn.orc.tools;
 
 import dev.sorn.orc.api.ReaderFactory;
 import dev.sorn.orc.api.Tool;
-import dev.sorn.orc.errors.Error;
+import dev.sorn.orc.errors.OrcException;
 import dev.sorn.orc.types.LineNumber;
 import dev.sorn.orc.types.LineNumberRange;
 import dev.sorn.orc.types.Result;
 import dev.sorn.orc.types.Id;
+import dev.sorn.orc.types.Result.Failure;
+import dev.sorn.orc.types.Result.Success;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.stream.Collectors;
 
-import static dev.sorn.orc.types.Result.error;
-import static dev.sorn.orc.types.Result.ok;
 import static java.lang.Integer.MAX_VALUE;
+import static java.util.stream.Collectors.joining;
 
 public final class FileReaderTool implements Tool<FileReaderTool.Input, String> {
 
@@ -41,17 +43,11 @@ public final class FileReaderTool implements Tool<FileReaderTool.Input, String> 
             final var result = reader.lines()
                 .skip(from - 1)
                 .limit(to - from)
-                .reduce((a, b) -> a + "\n" + b)
-                .orElse("");
-            return ok(result);
+                .collect(joining("\n"));
+            return Success.of(result);
         } catch (IOException e) {
-            return error(new Error(e));
+            return Failure.of(new OrcException(e));
         }
-    }
-
-    @Override
-    public Class<Input> inputType() {
-        return Input.class;
     }
 
     public record Input(

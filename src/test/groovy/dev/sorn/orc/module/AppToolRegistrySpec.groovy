@@ -1,7 +1,7 @@
 package dev.sorn.orc.module
 
 import dev.sorn.orc.OrcSpecification
-import dev.sorn.orc.errors.Error
+import dev.sorn.orc.errors.OrcException
 import dev.sorn.orc.tools.ListDirectoryContentsTool
 import dev.sorn.orc.tools.PrintWorkingDirectoryTool
 import dev.sorn.orc.types.Id
@@ -23,18 +23,18 @@ class AppToolRegistrySpec extends OrcSpecification {
         registry.get(Id.of("list_directory_contents_tool")) == listTool
     }
 
-    def "retrieved tool executes correctly"() {
+    def "throws error when registering existing tool"() {
         given:
         def registry = new AppToolRegistry()
         def pwdTool = new PrintWorkingDirectoryTool()
-        registry.register(pwdTool)
 
         when:
-        def result = registry.get(Id.of("print_working_directory_tool")).execute()
+        registry.register(pwdTool)
+        registry.register(pwdTool)
 
         then:
-        result.isOk()
-        result.get().toString() == System.getProperty("user.dir")
+        def ex = thrown(OrcException)
+        ex.message == "'print_working_directory_tool' tool is already registered"
     }
 
     def "throws error when retrieving unregistered tool"() {
@@ -45,7 +45,7 @@ class AppToolRegistrySpec extends OrcSpecification {
         registry.get(Id.of("non_existent_tool"))
 
         then:
-        def ex = thrown(Error)
+        def ex = thrown(OrcException)
         ex.message == "'non_existent_tool' tool is not registered"
     }
 

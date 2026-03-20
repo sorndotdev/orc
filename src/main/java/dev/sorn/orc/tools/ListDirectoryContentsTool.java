@@ -1,16 +1,16 @@
 package dev.sorn.orc.tools;
 
 import dev.sorn.orc.api.Tool;
-import dev.sorn.orc.errors.Error;
+import dev.sorn.orc.errors.OrcException;
 import dev.sorn.orc.types.Result;
 import dev.sorn.orc.types.Id;
+import dev.sorn.orc.types.Result.Empty;
+import dev.sorn.orc.types.Result.Failure;
+import dev.sorn.orc.types.Result.Success;
 
 import java.nio.file.Path;
 import java.util.List;
 
-import static dev.sorn.orc.types.Result.empty;
-import static dev.sorn.orc.types.Result.error;
-import static dev.sorn.orc.types.Result.ok;
 import static java.nio.file.Files.exists;
 import static java.nio.file.Files.isDirectory;
 import static java.nio.file.Files.list;
@@ -28,26 +28,21 @@ public final class ListDirectoryContentsTool implements Tool<Path, List<String>>
     public Result<List<String>> execute(Path directory) {
         try {
             if (!exists(directory)) {
-                throw new Error("'%s' directory not found", directory);
+                throw new OrcException("'%s' directory not found", directory);
             }
             if (!isDirectory(directory)) {
-                throw new Error("'%s' is not a directory", directory);
+                throw new OrcException("'%s' is not a directory", directory);
             }
             try (final var stream = list(directory)) {
                 final var list = stream
                     .map(Path::getFileName)
                     .map(Path::toString)
                     .toList();
-                return list.isEmpty() ? empty() : ok(list);
+                return list.isEmpty() ? Empty.of() : Success.of(list);
             }
         } catch (Exception e) {
-            return error(new Error(e));
+            return Failure.of(new OrcException(e));
         }
-    }
-
-    @Override
-    public Class<Path> inputType() {
-        return Path.class;
     }
 
 }

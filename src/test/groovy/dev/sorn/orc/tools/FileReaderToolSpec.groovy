@@ -1,7 +1,7 @@
 package dev.sorn.orc.tools
 
 import dev.sorn.orc.OrcSpecification
-import dev.sorn.orc.errors.Error
+import dev.sorn.orc.errors.OrcException
 import dev.sorn.orc.types.LineNumberRange
 import spock.lang.TempDir
 
@@ -28,8 +28,7 @@ class FileReaderToolSpec extends OrcSpecification {
         def result = tool.execute(new FileReaderTool.Input(file, LineNumberRange.empty()))
 
         then:
-        result.isOk()
-        result.get() == contents
+        result.fold(value -> value == contents, {}, {})
     }
 
     def "reads only specified line range"() {
@@ -46,8 +45,7 @@ class FileReaderToolSpec extends OrcSpecification {
         def result = tool.execute(new FileReaderTool.Input(file, range))
 
         then:
-        result.isOk()
-        result.get() == expected
+        result.fold(value -> value == expected, {}, {})
 
         where:
         from | to | expected
@@ -68,8 +66,7 @@ class FileReaderToolSpec extends OrcSpecification {
         def result = tool.execute(new FileReaderTool.Input(missing, LineNumberRange.empty()))
 
         then:
-        result.isError()
-        result.getError() instanceof Error
+        result.fold({}, err -> err instanceof OrcException, {})
     }
 
 }

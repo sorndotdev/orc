@@ -1,43 +1,61 @@
 package dev.sorn.orc.types;
 
-import dev.sorn.orc.errors.Error;
-import io.vavr.control.Option;
+import dev.sorn.orc.errors.OrcException;
 
-import static io.vavr.control.Option.none;
-import static io.vavr.control.Option.some;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
-public record Result<T>(Option<T> value, Option<Error> error) {
 
-    public static <T> Result<T> ok(T value) {
-        return new Result<>(some(value), none());
+public sealed interface Result<T> permits Result.Success, Result.Failure, Result.Empty {
+
+    <R> R fold(
+        Function<? super T, ? extends R> onSuccess,
+        Function<? super OrcException, ? extends R> onFailure,
+        Supplier<? extends R> onEmpty);
+
+    record Success<T>(T value) implements Result<T> {
+        public static <T> Success<T> of(T value) {
+            return new Success<>(value);
+        }
+
+        @Override
+        public <R> R fold(
+            Function<? super T, ? extends R> onSuccess,
+            Function<? super OrcException, ? extends R> onFailure,
+            Supplier<? extends R> onEmpty
+        ) {
+            return onSuccess.apply(value);
+        }
     }
 
-    public static <T> Result<T> empty() {
-        return new Result<>(none(), none());
+    record Failure<T>(OrcException value) implements Result<T> {
+        public static <T> Failure<T> of(OrcException value) {
+            return new Failure<>(value);
+        }
+
+        @Override
+        public <R> R fold(
+            Function<? super T, ? extends R> onSuccess,
+            Function<? super OrcException, ? extends R> onFailure,
+            Supplier<? extends R> onEmpty
+        ) {
+            return onFailure.apply(value);
+        }
     }
 
-    public static <T> Result<T> error(Error error) {
-        return new Result<>(none(), some(error));
-    }
+    record Empty<T>() implements Result<T> {
+        public static <T> Empty<T> of() {
+            return new Empty<>();
+        }
 
-    public T get() {
-        return value.get();
-    }
-
-    public Error getError() {
-        return error.get();
-    }
-
-    public boolean isOk() {
-        return !value.isEmpty() && error.isEmpty();
-    }
-
-    public boolean isEmpty() {
-        return value.isEmpty() && error.isEmpty();
-    }
-
-    public boolean isError() {
-        return value.isEmpty() && !error.isEmpty();
+        @Override
+        public <R> R fold(
+            Function<? super T, ? extends R> onSuccess,
+            Function<? super OrcException, ? extends R> onFailure,
+            Supplier<? extends R> onEmpty
+        ) {
+            return onEmpty.get();
+        }
     }
 
 }

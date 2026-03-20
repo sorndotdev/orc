@@ -2,7 +2,7 @@ package dev.sorn.orc.module;
 
 import dev.sorn.orc.api.Tool;
 import dev.sorn.orc.api.ToolRegistry;
-import dev.sorn.orc.errors.Error;
+import dev.sorn.orc.errors.OrcException;
 import dev.sorn.orc.types.Id;
 
 import java.util.Map;
@@ -13,17 +13,22 @@ public final class AppToolRegistry implements ToolRegistry {
     private final Map<Id, Tool<?, ?>> tools = new ConcurrentHashMap<>();
 
     @Override
-    public Tool<?, ?> get(Id id) {
+    @SuppressWarnings("unchecked")
+    public <I, O> Tool<I, O> get(Id id) {
         final var tool = tools.get(id);
         if (tool == null) {
-            throw new Error("'%s' tool is not registered", id.value());
+            throw new OrcException("'%s' tool is not registered", id.value());
         }
-        return tool;
+        return (Tool<I, O>) tool;
     }
 
     @Override
     public <I, O> void register(Tool<I, O> tool) {
-        tools.put(tool.id(), tool);
+        final var id = tool.id();
+        if (tools.containsKey(id)) {
+            throw new OrcException("'%s' tool is already registered", id.value());
+        }
+        tools.put(id, tool);
     }
 
     public int size() {

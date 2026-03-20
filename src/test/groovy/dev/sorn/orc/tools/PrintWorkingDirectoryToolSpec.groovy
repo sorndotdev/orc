@@ -11,17 +11,12 @@ class PrintWorkingDirectoryToolSpec extends OrcSpecification {
         def tool = toolRegistry.get(PRINT_WORKING_DIRECTORY_TOOL_ID)
 
         when:
-        def result = tool.execute()
+        def result = tool.execute(null)
 
         then:
-        result.isOk()
-        with(result.get()) { r ->
-            r.toString() == System.getProperty("user.dir")
-        }
-
-        and:
-        !result.isEmpty()
-        !result.isError()
+        result.fold(value -> {
+            value.toString() == System.getProperty("user.dir")
+        }, {}, {})
     }
 
 }

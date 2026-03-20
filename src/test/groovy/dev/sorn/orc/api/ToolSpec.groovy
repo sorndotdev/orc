@@ -4,65 +4,29 @@ import dev.sorn.orc.OrcSpecification
 import dev.sorn.orc.types.Result
 import dev.sorn.orc.types.Id
 
-import static dev.sorn.orc.types.Result.ok
-
 class ToolSpec extends OrcSpecification {
 
-    def "calls no-arg execute on Void Tool"() {
+    def "executes tool"() {
         given:
-        def tool = new VoidTool()
+        def input = "abc"
+        def tool = new SomeTool()
 
         when:
-        def result = tool.execute()
+        def result = tool.execute(input)
 
         then:
-        result.isOk()
-        result.get() == "ok"
+        result.fold(value -> value == "abc", { false }, { false })
     }
 
-    def "throws calling no-arg execute on a non-Void Tool"() {
-        given:
-        def tool = new NonVoidTool()
-
-        when:
-        tool.execute()
-
-        then:
-        def ex = thrown(UnsupportedOperationException)
-        ex.message == "No-arg execute() is only supported for Tool<Void, O>"
-    }
-
-    static class VoidTool implements Tool<Void, String> {
+    static class SomeTool implements Tool<String, String> {
         @Override
         Id id() {
-            return Id.of("test_void_tool")
+            return Id.of("some_tool")
         }
 
         @Override
-        Result<String> execute(Void input) {
-            return ok("ok")
-        }
-
-        @Override
-        Class<Void> inputType() {
-            return Void.class
-        }
-    }
-
-    static class NonVoidTool implements Tool<String, String> {
-        @Override
-        Id id() {
-            return Id.of("test_non_void_tool")
-        }
-
-        @Override
-        Result<String> execute(String input) {
-            return ok(input)
-        }
-
-        @Override
-        Class<String> inputType() {
-            return String.class
+        Result execute(String input) {
+            return Result.Success.of(input)
         }
     }
 
