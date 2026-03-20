@@ -2,7 +2,7 @@ package dev.sorn.orc.api
 
 import dev.sorn.orc.OrcSpecification
 import dev.sorn.orc.types.Result
-import dev.sorn.orc.types.ToolId
+import dev.sorn.orc.types.Id
 
 import static dev.sorn.orc.types.Result.ok
 
@@ -34,8 +34,8 @@ class ToolSpec extends OrcSpecification {
 
     static class VoidTool implements Tool<Void, String> {
         @Override
-        ToolId id() {
-            return ToolId.of("test_void_tool")
+        Id id() {
+            return Id.of("test_void_tool")
         }
 
         @Override
@@ -51,8 +51,8 @@ class ToolSpec extends OrcSpecification {
 
     static class NonVoidTool implements Tool<String, String> {
         @Override
-        ToolId id() {
-            return ToolId.of("test_non_void_tool")
+        Id id() {
+            return Id.of("test_non_void_tool")
         }
 
         @Override

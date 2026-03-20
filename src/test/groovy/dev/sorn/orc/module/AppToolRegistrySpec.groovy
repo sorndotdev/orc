@@ -4,7 +4,7 @@ import dev.sorn.orc.OrcSpecification
 import dev.sorn.orc.errors.ToolError
 import dev.sorn.orc.tools.ListDirectoryContentsTool
 import dev.sorn.orc.tools.PrintWorkingDirectoryTool
-import dev.sorn.orc.types.ToolId
+import dev.sorn.orc.types.Id
 
 class AppToolRegistrySpec extends OrcSpecification {
 
@@ -19,8 +19,8 @@ class AppToolRegistrySpec extends OrcSpecification {
         registry.register(listTool)
 
         then:
-        registry.get(ToolId.of("print_working_directory")) == pwdTool
-        registry.get(ToolId.of("list_directory_contents")) == listTool
+        registry.get(Id.of("print_working_directory_tool")) == pwdTool
+        registry.get(Id.of("list_directory_contents_tool")) == listTool
     }
 
     def "retrieved tool executes correctly"() {
@@ -30,7 +30,7 @@ class AppToolRegistrySpec extends OrcSpecification {
         registry.register(pwdTool)
 
         when:
-        def result = registry.get(ToolId.of("print_working_directory")).execute()
+        def result = registry.get(Id.of("print_working_directory_tool")).execute()
 
         then:
         result.isOk()
@@ -42,7 +42,7 @@ class AppToolRegistrySpec extends OrcSpecification {
         def registry = new AppToolRegistry()
 
         when:
-        registry.get(ToolId.of("non_existent_tool"))
+        registry.get(Id.of("non_existent_tool"))
 
         then:
         def ex = thrown(ToolError)

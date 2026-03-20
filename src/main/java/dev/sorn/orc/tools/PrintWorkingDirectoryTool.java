@@ -2,7 +2,7 @@ package dev.sorn.orc.tools;
 
 import dev.sorn.orc.api.Tool;
 import dev.sorn.orc.types.Result;
-import dev.sorn.orc.types.ToolId;
+import dev.sorn.orc.types.Id;
 
 import java.nio.file.Path;
 
@@ -11,10 +11,10 @@ import static java.lang.System.getProperty;
 
 public class PrintWorkingDirectoryTool implements Tool<Void, Path> {
 
-    public static ToolId PRINT_WORKING_DIRECTORY_TOOL_ID = ToolId.of("print_working_directory");
+    public static Id PRINT_WORKING_DIRECTORY_TOOL_ID = Id.of("print_working_directory_tool");
 
     @Override
-    public ToolId id() {
+    public Id id() {
         return PRINT_WORKING_DIRECTORY_TOOL_ID;
     }
 

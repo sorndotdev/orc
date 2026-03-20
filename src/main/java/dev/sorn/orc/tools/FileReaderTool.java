@@ -6,7 +6,7 @@ import dev.sorn.orc.errors.ToolError;
 import dev.sorn.orc.types.LineNumber;
 import dev.sorn.orc.types.LineNumberRange;
 import dev.sorn.orc.types.Result;
-import dev.sorn.orc.types.ToolId;
+import dev.sorn.orc.types.Id;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -18,7 +18,7 @@ import static java.lang.Integer.MAX_VALUE;
 
 public final class FileReaderTool implements Tool<FileReaderTool.Input, String> {
 
-    public static final ToolId FILE_READER_TOOL_ID = ToolId.of("file_reader");
+    public static final Id FILE_READER_TOOL_ID = Id.of("file_reader_tool");
 
     private final ReaderFactory readerFactory;
 
@@ -27,7 +27,7 @@ public final class FileReaderTool implements Tool<FileReaderTool.Input, String> 
     }
 
     @Override
-    public ToolId id() {
+    public Id id() {
         return FILE_READER_TOOL_ID;
     }
 

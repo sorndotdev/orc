@@ -3,7 +3,7 @@ package dev.sorn.orc.tools;
 import dev.sorn.orc.api.Tool;
 import dev.sorn.orc.errors.ToolError;
 import dev.sorn.orc.types.Result;
-import dev.sorn.orc.types.ToolId;
+import dev.sorn.orc.types.Id;
 
 import java.nio.file.Path;
 import java.util.List;
@@ -17,10 +17,10 @@ import static java.nio.file.Files.list;
 
 public final class ListDirectoryContentsTool implements Tool<Path, List<String>> {
 
-    public static final ToolId LIST_DIRECTORY_CONTENTS_TOOL_ID = ToolId.of("list_directory_contents");
+    public static final Id LIST_DIRECTORY_CONTENTS_TOOL_ID = Id.of("list_directory_contents_tool");
 
     @Override
-    public ToolId id() {
+    public Id id() {
         return LIST_DIRECTORY_CONTENTS_TOOL_ID;
     }
 
