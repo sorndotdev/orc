@@ -14,7 +14,7 @@ class ToolSpec extends OrcSpecification {
         def result = tool.execute(input)
 
         then:
-        result.fold(value -> value == "abc", { false }, { false })
+        result.fold(value -> value == "abc", { false })
     }
 
     static class SomeTool implements Tool<String, String> {

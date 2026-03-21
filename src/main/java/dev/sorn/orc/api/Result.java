@@ -3,15 +3,12 @@ package dev.sorn.orc.api;
 import dev.sorn.orc.errors.OrcException;
 
 import java.util.function.Function;
-import java.util.function.Supplier;
 
-
-public sealed interface Result<T> permits Result.Success, Result.Failure, Result.Empty {
+public sealed interface Result<T> permits Result.Success, Result.Failure {
 
     <R> R fold(
         Function<? super T, ? extends R> onSuccess,
-        Function<? super OrcException, ? extends R> onFailure,
-        Supplier<? extends R> onEmpty);
+        Function<? super OrcException, ? extends R> onFailure);
 
     record Success<T>(T value) implements Result<T> {
         public static <T> Success<T> of(T value) {
@@ -21,8 +18,7 @@ public sealed interface Result<T> permits Result.Success, Result.Failure, Result
         @Override
         public <R> R fold(
             Function<? super T, ? extends R> onSuccess,
-            Function<? super OrcException, ? extends R> onFailure,
-            Supplier<? extends R> onEmpty
+            Function<? super OrcException, ? extends R> onFailure
         ) {
             return onSuccess.apply(value);
         }
@@ -36,25 +32,9 @@ public sealed interface Result<T> permits Result.Success, Result.Failure, Result
         @Override
         public <R> R fold(
             Function<? super T, ? extends R> onSuccess,
-            Function<? super OrcException, ? extends R> onFailure,
-            Supplier<? extends R> onEmpty
+            Function<? super OrcException, ? extends R> onFailure
         ) {
             return onFailure.apply(value);
-        }
-    }
-
-    record Empty<T>() implements Result<T> {
-        public static <T> Empty<T> of() {
-            return new Empty<>();
-        }
-
-        @Override
-        public <R> R fold(
-            Function<? super T, ? extends R> onSuccess,
-            Function<? super OrcException, ? extends R> onFailure,
-            Supplier<? extends R> onEmpty
-        ) {
-            return onEmpty.get();
         }
     }
 

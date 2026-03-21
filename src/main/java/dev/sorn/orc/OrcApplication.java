@@ -18,7 +18,7 @@ public class OrcApplication {
             URI.create("http://localhost:11434"));
         final var result = llmClient
             .complete("Explain SOLID principles")
-            .fold(value -> value, err -> err, () -> "EMPTY");
+            .fold(value -> value, err -> err);
         System.out.println("RESULT");
         System.out.println(result);
     }

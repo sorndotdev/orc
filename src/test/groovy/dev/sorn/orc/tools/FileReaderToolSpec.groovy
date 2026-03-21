@@ -28,7 +28,7 @@ class FileReaderToolSpec extends OrcSpecification {
         def result = tool.execute(new FileReaderTool.Input(file, LineNumberRange.empty()))
 
         then:
-        result.fold(value -> value == contents, {}, {})
+        result.fold(value -> value == contents, { false })
     }
 
     def "reads only specified line range"() {
@@ -45,7 +45,7 @@ class FileReaderToolSpec extends OrcSpecification {
         def result = tool.execute(new FileReaderTool.Input(file, range))
 
         then:
-        result.fold(value -> value == expected, {}, {})
+        result.fold(value -> value == expected, { false })
 
         where:
         from | to | expected
@@ -66,7 +66,7 @@ class FileReaderToolSpec extends OrcSpecification {
         def result = tool.execute(new FileReaderTool.Input(missing, LineNumberRange.empty()))
 
         then:
-        result.fold({}, err -> err instanceof OrcException, {})
+        result.fold({ false }, err -> err instanceof OrcException)
     }
 
 }

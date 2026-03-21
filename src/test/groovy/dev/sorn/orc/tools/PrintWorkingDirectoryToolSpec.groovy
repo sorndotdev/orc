@@ -16,7 +16,7 @@ class PrintWorkingDirectoryToolSpec extends OrcSpecification {
         then:
         result.fold(value -> {
             value.toString() == System.getProperty("user.dir")
-        }, {}, {})
+        }, { false })
     }
 
 }

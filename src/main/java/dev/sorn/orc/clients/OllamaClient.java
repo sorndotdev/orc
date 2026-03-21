@@ -3,7 +3,6 @@ package dev.sorn.orc.clients;
 import dev.sorn.orc.api.JsonHttpClient;
 import dev.sorn.orc.api.LlmClient;
 import dev.sorn.orc.api.Result;
-import dev.sorn.orc.api.Result.Empty;
 import dev.sorn.orc.api.Result.Failure;
 import dev.sorn.orc.api.Result.Success;
 import dev.sorn.orc.dto.OllamaResponse;
@@ -46,8 +45,7 @@ public final class OllamaClient implements LlmClient {
             final var response = httpClient.post(uri, body);
             return response.fold(
                 json -> Success.of(OllamaResponse.of(json).toString()),
-                Failure::of,
-                Empty::of);
+                Failure::of);
         } catch (Exception e) {
             return Failure.of(new OrcException(e));
         }

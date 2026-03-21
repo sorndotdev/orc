@@ -4,7 +4,6 @@ import dev.sorn.orc.api.Tool;
 import dev.sorn.orc.errors.OrcException;
 import dev.sorn.orc.api.Result;
 import dev.sorn.orc.types.Id;
-import dev.sorn.orc.api.Result.Empty;
 import dev.sorn.orc.api.Result.Failure;
 import dev.sorn.orc.api.Result.Success;
 
@@ -38,7 +37,7 @@ public final class ListDirectoryContentsTool implements Tool<Path, List<String>>
                     .map(Path::getFileName)
                     .map(Path::toString)
                     .toList();
-                return list.isEmpty() ? Empty.of() : Success.of(list);
+                return Success.of(list);
             }
         } catch (Exception e) {
             return Failure.of(new OrcException(e));
