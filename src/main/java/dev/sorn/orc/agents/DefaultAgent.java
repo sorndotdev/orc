@@ -8,20 +8,27 @@ import dev.sorn.orc.errors.ToolCallException;
 import dev.sorn.orc.json.Json;
 import dev.sorn.orc.parsers.ToolCallParser;
 import dev.sorn.orc.types.AgentDefinition;
-import dev.sorn.orc.types.BddInstruction;
 import dev.sorn.orc.types.ToolCall;
 import io.vavr.collection.List;
-
-import java.util.StringJoiner;
-
-import static dev.sorn.orc.json.Json.toJson;
+import java.util.function.Consumer;
 
 public final class DefaultAgent extends BaseAgent {
 
-    private static final int MAX_ITERATIONS = 5;
+    private static final int MAX_ITERATIONS = 20;
+
+    private final Consumer<String> progressConsumer;
 
     private DefaultAgent(Builder builder) {
         super(builder.agentDefinition, builder.toolRegistry, builder.llmClient);
+        this.progressConsumer = builder.progressConsumer;
+    }
+
+    private void log(String msg) {
+        if (progressConsumer != null) {
+            progressConsumer.accept(msg);
+        } else {
+            System.err.println("[DEBUG] " + msg);
+        }
     }
 
     @Override
@@ -49,23 +56,29 @@ public final class DefaultAgent extends BaseAgent {
         conversation.append("\n## User Input\n").append(prompt).append("\n");
 
         var iteration = 0;
+        var lastToolCall = new ToolCall(null, null); // track last call to detect loops
+        var repeatCount = 0;
+
         while (iteration < MAX_ITERATIONS) {
-            System.err.println("[DEBUG] Iteration " + (iteration + 1) + " - calling LLM");
+            log("Iteration " + (iteration + 1) + " - calling LLM");
             var llmResult = llmClient.complete(conversation.toString());
             if (llmResult instanceof Result.Failure<String> failure) {
                 return failure;
             }
             var response = ((Result.Success<String>) llmResult).value();
-            System.err.println("[DEBUG] LLM response length: " + (response == null ? "null" : response.length()));
+            log("LLM response received, length: " + response.length());
 
             if (response == null || response.isBlank()) {
                 return Result.Failure.of(new OrcException("LLM returned empty response"));
             }
 
+            // Log the first 200 chars of the response for debugging
+            log("Response preview: " + response.substring(0, Math.min(200, response.length())));
+
             List<ToolCall> toolCalls;
             try {
                 toolCalls = ToolCallParser.parse(response);
-                System.err.println("[DEBUG] Parsed " + toolCalls.size() + " tool calls");
+                log("Parsed " + toolCalls.size() + " tool calls");
             } catch (ToolCallException e) {
                 conversation.append("## Assistant\n").append(response).append("\n");
                 conversation.append("## Tool Call Error\n").append(e.getMessage()).append("\n");
@@ -77,20 +90,40 @@ public final class DefaultAgent extends BaseAgent {
                 return Result.Success.of(response);
             }
 
+            if (!toolCalls.isEmpty() && toolCalls.get(0).equals(lastToolCall)) {
+                repeatCount++;
+                if (repeatCount >= 2) {
+                    log("Repeated tool call detected, forcing final answer");
+                    return Result.Failure.of(new OrcException("Agent stuck in tool call loop"));
+                }
+            } else {
+                repeatCount = 0;
+                lastToolCall = toolCalls.get(0);
+            }
+
             conversation.append("## Assistant\n").append(response).append("\n");
             conversation.append("## Tool Results\n");
             for (var toolCall : toolCalls) {
+                log("Executing tool: " + toolCall.toolId().value());
+                log("Arguments: " + Json.toJson(toolCall.arguments()));
                 try {
                     var tool = toolRegistry.get(toolCall.toolId());
                     var input = tool.parseArguments(toolCall.arguments());
                     var result = tool.execute(input);
                     var resultStr = result.fold(
-                        Json::toJson,
-                        err -> "Error: " + err.getMessage()
+                        val -> {
+                            log("Tool succeeded, result length: " + (val != null ? val.toString().length() : 0));
+                            return Json.toJson(val);
+                        },
+                        err -> {
+                            log("Tool failed: " + err.getMessage());
+                            return "Error: " + err.getMessage();
+                        }
                     );
                     conversation.append("Tool: ").append(toolCall.toolId().value()).append("\n");
                     conversation.append("Result: ").append(resultStr).append("\n");
                 } catch (OrcException e) {
+                    log("Tool execution exception: " + e.getMessage());
                     conversation.append("Tool: ").append(toolCall.toolId().value()).append("\n");
                     conversation.append("Result: Error: ").append(e.getMessage()).append("\n");
                 }
@@ -104,6 +137,7 @@ public final class DefaultAgent extends BaseAgent {
         private AgentDefinition agentDefinition;
         private ToolRegistry toolRegistry;
         private LlmClient llmClient;
+        private Consumer<String> progressConsumer;
 
         private Builder() {}
 
@@ -126,8 +160,14 @@ public final class DefaultAgent extends BaseAgent {
             return this;
         }
 
+        public Builder progressConsumer(Consumer<String> progressConsumer) {
+            this.progressConsumer = progressConsumer;
+            return this;
+        }
+
         public DefaultAgent build() {
             return new DefaultAgent(this);
         }
     }
+
 }
