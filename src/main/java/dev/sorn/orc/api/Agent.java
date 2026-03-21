@@ -19,6 +19,6 @@ public interface Agent {
 
     List<AgentData> outputs();
 
-    List<String> instructions();
+    List<String> instructions(); // TODO: Make BDD style
 
 }

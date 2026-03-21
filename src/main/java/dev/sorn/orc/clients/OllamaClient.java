@@ -18,15 +18,18 @@ public final class OllamaClient implements LlmClient {
     private final Id modelId;
     private final JsonHttpClient httpClient;
     private final URI baseUri;
+    private final int maxTokens;
 
     public OllamaClient(
         Id modelId,
         JsonHttpClient httpClient,
-        URI baseUri
+        URI baseUri,
+        int maxTokens
     ) {
         this.modelId = modelId;
         this.httpClient = httpClient;
         this.baseUri = baseUri;
+        this.maxTokens = maxTokens;
     }
 
     @Override
@@ -40,7 +43,8 @@ public final class OllamaClient implements LlmClient {
             final var body = jsonObjectNode()
                 .put("model", modelId.value())
                 .put("prompt", prompt)
-                .put("max_tokens", 512);
+                .put("stream", false)
+                .put("max_tokens", maxTokens);
             final var uri = baseUri.resolve("/v1/completions");
             final var response = httpClient.post(uri, body);
             return response.fold(

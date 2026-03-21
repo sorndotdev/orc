@@ -52,17 +52,16 @@ class AgentFactorySpec extends OrcSpecification {
         agent.toolIds()*.value() == ["file_reader_tool", "list_directory_contents_tool", "print_working_directory_tool"]
 
         and:
-        agent.input().size() == 1
-        agent.input()[0].name == "code"
-        agent.input()[0].type == STRING
+        agent.inputs().size() == 1
+        agent.inputs()[0].name == "code"
+        agent.inputs()[0].type == STRING
 
         and:
-        agent.output().size() == 2
-        agent.output()[0].name == "review_comment"
-        agent.output()[0].type == COLLECTION
-
-        agent.output()[1].name == "review_approved"
-        agent.output()[1].type == BOOLEAN
+        agent.outputs().size() == 2
+        agent.outputs()[0].name == "review_comment"
+        agent.outputs()[0].type == COLLECTION
+        agent.outputs()[1].name == "review_approved"
+        agent.outputs()[1].type == BOOLEAN
 
         and:
         agent.instructions() == List.of(

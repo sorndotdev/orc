@@ -31,7 +31,7 @@ class IdSpec extends OrcSpecification {
         null         || "Id cannot be blank"
         ""           || "Id cannot be blank"
         "   "        || "Id cannot be blank"
-        "invalid!@#" || "Id must match [a-zA-Z0-9_-]+"
+        "invalid!@#" || "Id must match [a-zA-Z0-9:._-]+"
     }
 
 }

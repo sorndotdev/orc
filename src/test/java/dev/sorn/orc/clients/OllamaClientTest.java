@@ -21,7 +21,7 @@ public class OllamaClientTest {
     private final DefaultJsonHttpClient mockHttpClient = mock(DefaultJsonHttpClient.class);
     private final Id modelId = Id.of("codellama");
     private final URI baseUri = URI.create("http://localhost:11434");
-    private final OllamaClient llmClient = new OllamaClient(modelId, mockHttpClient, baseUri);
+    private final OllamaClient llmClient = new OllamaClient(modelId, mockHttpClient, baseUri, 512);
 
     @Test
     void testCompleteReturnsParsedResponse() {

@@ -1,6 +1,5 @@
 package dev.sorn.orc;
 
-import dev.sorn.orc.agents.DefaultAgent;
 import dev.sorn.orc.clients.DefaultJsonHttpClient;
 import dev.sorn.orc.clients.OllamaClient;
 import dev.sorn.orc.module.AgentFactory;
@@ -9,12 +8,10 @@ import dev.sorn.orc.tools.FileReaderTool;
 import dev.sorn.orc.tools.ListDirectoryContentsTool;
 import dev.sorn.orc.tools.PrintWorkingDirectoryTool;
 import dev.sorn.orc.types.Id;
-
 import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
-
 import static dev.sorn.orc.agents.DefaultAgent.Builder.defaultAgent;
 import static java.nio.file.Files.readString;
 
@@ -25,7 +22,7 @@ public class OrcApplication {
         final var json = readString(jsonPath);
 
         final var jsonHttpClient = new DefaultJsonHttpClient();
-        final var llmClient = new OllamaClient(Id.of("codellama"), jsonHttpClient, URI.create("http://127.0.0.1:11434"));
+        final var llmClient = new OllamaClient(Id.of("qwen3:14b"), jsonHttpClient, URI.create("http://127.0.0.1:11434"), 2048); // TODO: move to agent defs
 
         final var registry = new AppToolRegistry();
         registry.register(new FileReaderTool(Files::newBufferedReader));

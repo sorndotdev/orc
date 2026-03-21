@@ -8,8 +8,8 @@ public record Id(String value) {
         if (value == null || value.isBlank()) {
             throw new ValidationException("Id cannot be blank");
         }
-        if (!value.matches("[a-zA-Z0-9_-]+")) {
-            throw new ValidationException("Id must match [a-zA-Z0-9_-]+");
+        if (!value.matches("[a-zA-Z0-9:._-]+")) {
+            throw new ValidationException("Id must match [a-zA-Z0-9:._-]+");
         }
     }
 

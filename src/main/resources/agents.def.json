@@ -11,22 +11,27 @@
       "input": [
         {
           "type": "string",
-          "name": "code"
+          "name": "code",
+          "example": []
         }
       ],
       "output": [
         {
           "type": "collection",
-          "name": "review_comment"
+          "name": "review_comment",
+          "example": []
         },
         {
           "type": "boolean",
-          "name": "review_approved"
+          "name": "review_approved",
+          "example": []
         }
       ],
       "instructions": [
-        "Check given code adheres to SOLID principles",
-        "Check given code adheres to DRY"
+        "Check code is SOLID-compliant",
+        "Check code is DRY-compliant",
+        "Check code is tested",
+        "Check code is functional style"
       ]
     }
   ]
