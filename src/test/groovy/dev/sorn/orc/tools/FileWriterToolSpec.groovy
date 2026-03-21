@@ -3,17 +3,14 @@ package dev.sorn.orc.tools
 import dev.sorn.orc.OrcSpecification
 import dev.sorn.orc.errors.OrcException
 import spock.lang.TempDir
-
 import java.nio.file.Files
 import java.nio.file.Path
-
 import static dev.sorn.orc.json.Json.jsonObjectNode
 import static dev.sorn.orc.tools.FileWriterTool.FILE_WRITER_TOOL_ID
 import static java.nio.file.Files.readString
 import static java.nio.file.Files.writeString
 
 class FileWriterToolSpec extends OrcSpecification {
-
     @TempDir
     Path tempDir
 
@@ -35,10 +32,12 @@ class FileWriterToolSpec extends OrcSpecification {
         then:
         result.fold(
             { msg ->
+                assert msg != null
                 assert msg.contains("File written to: ${file.toAbsolutePath()}")
                 assert msg.contains("${content.length()} bytes")
                 assert !msg.contains("appended")
                 assert readString(file) == content
+                return true
             },
             { err -> assert false : "Should not fail" }
         )
@@ -59,10 +58,12 @@ class FileWriterToolSpec extends OrcSpecification {
         then:
         result.fold(
             { msg ->
+                assert msg != null
                 assert msg.contains("File written to: ${file.toAbsolutePath()}")
                 assert msg.contains("${append.length()} bytes")
                 assert msg.contains("appended")
                 assert readString(file) == original + append
+                return true
             },
             { err -> assert false : "Should not fail" }
         )
@@ -81,9 +82,11 @@ class FileWriterToolSpec extends OrcSpecification {
         then:
         result.fold(
             { msg ->
+                assert msg != null
                 assert msg.contains("File written to: ${file.toAbsolutePath()}")
                 assert Files.exists(deepDir)
                 assert readString(file) == content
+                return true
             },
             { err -> assert false : "Should not fail" }
         )
@@ -118,10 +121,12 @@ class FileWriterToolSpec extends OrcSpecification {
         then:
         result.fold(
             { msg ->
+                assert msg != null
                 assert msg.contains("0 bytes")
                 assert Files.exists(file)
                 assert readString(file) == ""
                 assert !msg.contains("appended")
+                return true
             },
             { err -> assert false : "Should not fail" }
         )
@@ -173,7 +178,7 @@ class FileWriterToolSpec extends OrcSpecification {
         def tool = toolRegistry.get(FILE_WRITER_TOOL_ID)
 
         expect:
-        tool.inputDescription().contains("writes content")
+        tool.inputDescription().contains("Writes content")
     }
 
 }
