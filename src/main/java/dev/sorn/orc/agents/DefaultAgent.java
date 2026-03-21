@@ -1,60 +1,61 @@
 package dev.sorn.orc.agents;
 
-import dev.sorn.orc.api.Agent;
-import dev.sorn.orc.api.AgentDefinition;
-import dev.sorn.orc.api.Tool;
+import dev.sorn.orc.types.AgentDefinition;
+import dev.sorn.orc.api.LlmClient;
+import dev.sorn.orc.api.Result;
 import dev.sorn.orc.api.ToolRegistry;
-import dev.sorn.orc.types.AgentData;
-import dev.sorn.orc.types.AgentRole;
-import dev.sorn.orc.types.Id;
-import io.vavr.collection.List;
 
-public final class DefaultAgent implements Agent {
+import java.util.StringJoiner;
 
-    private final Id id;
-    private final AgentRole role;
-    private final List<Tool<?, ?>> tools;
-    private final List<AgentData> input;
-    private final List<AgentData> output;
-    private final List<String> instructions;
+public final class DefaultAgent extends BaseAgent {
 
-    public DefaultAgent(AgentDefinition def, ToolRegistry registry) {
-        this.id = def.id();
-        this.role = def.role();
-        this.tools = def.toolIds().map(registry::get);
-        this.input = def.input();
-        this.output = def.output();
-        this.instructions = def.instructions();
+    private DefaultAgent(Builder builder) {
+        super(builder.agentDefinition, builder.toolRegistry, builder.llmClient);
     }
 
     @Override
-    public Id id() {
-        return id;
+    public Result<?> complete(String prompt) {
+        final var promptJoiner = new StringJoiner("\n");
+        promptJoiner.add("## Instructions");
+        agentDefinition.instructions().forEach(promptJoiner::add);
+        promptJoiner.add("");
+        promptJoiner.add("## Prompt");
+        promptJoiner.add(prompt);
+        promptJoiner.add("");
+        return llmClient.complete(promptJoiner.toString());
     }
 
-    @Override
-    public AgentRole role() {
-        return role;
-    }
+    public static final class Builder {
 
-    @Override
-    public List<Tool<?, ?>> tools() {
-        return tools;
-    }
+        private AgentDefinition agentDefinition;
+        private ToolRegistry toolRegistry;
+        private LlmClient llmClient;
 
-    @Override
-    public List<AgentData> input() {
-        return input;
-    }
+        private Builder() {}
 
-    @Override
-    public List<AgentData> output() {
-        return output;
-    }
+        public static Builder defaultAgent() {
+            return new Builder();
+        }
 
-    @Override
-    public List<String> instructions() {
-        return instructions;
+        public Builder agentDefinition(AgentDefinition agentDefinition) {
+            this.agentDefinition = agentDefinition;
+            return this;
+        }
+
+        public Builder toolRegistry(ToolRegistry toolRegistry) {
+            this.toolRegistry = toolRegistry;
+            return this;
+        }
+
+        public Builder llmClient(LlmClient llmClient) {
+            this.llmClient = llmClient;
+            return this;
+        }
+
+        public DefaultAgent build() {
+            return new DefaultAgent(this);
+        }
+
     }
 
 }

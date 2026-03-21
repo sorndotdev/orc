@@ -1,6 +1,6 @@
 package dev.sorn.orc.module;
 
-import dev.sorn.orc.api.AgentDefinition;
+import dev.sorn.orc.types.AgentDefinition;
 import dev.sorn.orc.types.AgentData;
 import dev.sorn.orc.types.AgentRole;
 import dev.sorn.orc.types.Id;
@@ -27,25 +27,7 @@ public class AgentFactory {
         final var outputs = parseAgentData(node.get("output"));
         final var instructions = parseInstructions(node.get("instructions"));
 
-        return new AgentDefinition() {
-            @Override
-            public Id id() { return id; }
-
-            @Override
-            public AgentRole role() { return role; }
-
-            @Override
-            public List<Id> toolIds() { return toolIds; }
-
-            @Override
-            public List<AgentData> input() { return inputs; }
-
-            @Override
-            public List<AgentData> output() { return outputs; }
-
-            @Override
-            public List<String> instructions() { return instructions; }
-        };
+        return new AgentDefinition(id, role, toolIds, inputs, outputs, instructions);
     }
 
     private List<AgentData> parseAgentData(JsonNode node) {

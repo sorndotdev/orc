@@ -7,15 +7,17 @@ import io.vavr.collection.List;
 
 public interface Agent {
 
+    Result<?> complete(String prompt);
+
     Id id();
 
     AgentRole role();
 
     List<Tool<?, ?>> tools();
 
-    List<AgentData> input();
+    List<AgentData> inputs();
 
-    List<AgentData> output();
+    List<AgentData> outputs();
 
     List<String> instructions();
 

@@ -1,5 +1,6 @@
 package dev.sorn.orc.clients;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import tools.jackson.databind.JsonNode;
 
@@ -23,7 +24,8 @@ public class DefaultJsonHttpClientTest {
     private final HttpResponse<String> responseMock = mock(HttpResponse.class);
 
     @Test
-    void testGetReturnsParsedJson() throws Exception {
+    @DisplayName("GET returns parsed JSON")
+    void get_returns_parsed_json() throws Exception {
         // GIVEN
         given(responseMock.body())
             .willReturn("{\"key\":\"value\"}");
@@ -39,7 +41,8 @@ public class DefaultJsonHttpClientTest {
     }
 
     @Test
-    void testPostReturnsParsedJson() throws Exception {
+    @DisplayName("POST returns parsed JSON")
+    void postReturnsParsedJson() throws Exception {
         // GIVEN
         given(responseMock.body())
             .willReturn("{\"response\":\"ok\"}");
@@ -53,4 +56,5 @@ public class DefaultJsonHttpClientTest {
         assertThat(result).isInstanceOf(Success.class);
         assertThat(((Success<JsonNode>) result).value().get("response").asText()).isEqualTo("ok");
     }
+
 }
