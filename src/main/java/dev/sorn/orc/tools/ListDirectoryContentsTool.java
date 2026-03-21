@@ -59,7 +59,11 @@ public final class ListDirectoryContentsTool implements Tool<Path, List<String>>
 
     @Override
     public String inputDescription() {
-        return "The path to a directory as a string, or an object with a 'path' field.";
+        return """
+            Lists the immediate contents of a directory (non‑recursive). 
+            For recursive file searches (by name or content), use the grep_tool instead.
+            Input: the path to a directory as a string, or an object with a 'path' field.
+            """;
     }
 
 }

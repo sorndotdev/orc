@@ -4,6 +4,7 @@ import dev.sorn.orc.api.Tool;
 import dev.sorn.orc.api.ToolRegistry;
 import dev.sorn.orc.errors.OrcException;
 import dev.sorn.orc.tools.FileReaderTool;
+import dev.sorn.orc.tools.GrepTool;
 import dev.sorn.orc.tools.ListDirectoryContentsTool;
 import dev.sorn.orc.tools.PrintWorkingDirectoryTool;
 import dev.sorn.orc.types.Id;
@@ -20,6 +21,7 @@ public class StubToolRegistry implements ToolRegistry {
         register(new FileReaderTool(Files::newBufferedReader));
         register(new ListDirectoryContentsTool());
         register(new PrintWorkingDirectoryTool());
+        register(new GrepTool());
     }
 
     @Override

@@ -1,6 +1,7 @@
 package dev.sorn.orc.module
 
 import dev.sorn.orc.OrcSpecification
+import dev.sorn.orc.types.BddInstruction
 import dev.sorn.orc.types.Id
 import io.vavr.collection.List
 
@@ -65,9 +66,8 @@ class AgentFactorySpec extends OrcSpecification {
 
         and:
         agent.instructions() == List.of(
-            "Check given code adheres to SOLID principles",
-            "Check given code adheres to DRY"
-        )
+            BddInstruction.then("Check given code adheres to SOLID principles"),
+            BddInstruction.then("Check given code adheres to DRY"))
     }
 
 }

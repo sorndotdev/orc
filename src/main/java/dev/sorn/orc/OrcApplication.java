@@ -5,6 +5,7 @@ import dev.sorn.orc.clients.OllamaClient;
 import dev.sorn.orc.module.AgentFactory;
 import dev.sorn.orc.module.AppToolRegistry;
 import dev.sorn.orc.tools.FileReaderTool;
+import dev.sorn.orc.tools.GrepTool;
 import dev.sorn.orc.tools.ListDirectoryContentsTool;
 import dev.sorn.orc.tools.PrintWorkingDirectoryTool;
 import dev.sorn.orc.types.Id;
@@ -42,6 +43,7 @@ public class OrcApplication {
         registry.register(new FileReaderTool(Files::newBufferedReader));
         registry.register(new ListDirectoryContentsTool());
         registry.register(new PrintWorkingDirectoryTool());
+        registry.register(new GrepTool());
 
         final var agentFactory = new AgentFactory();
         final var agents = agentFactory.loadFromJson(json)
@@ -67,6 +69,7 @@ public class OrcApplication {
             System.out.println("Inputs: " + agent.inputs());
             System.out.println("Outputs: " + agent.outputs());
             System.out.println("Instructions: " + agent.instructions());
+            System.out.println("User prompt: " + prompt);
             System.out.println("--- Processing ---");
 
             var result = agent.complete(prompt);

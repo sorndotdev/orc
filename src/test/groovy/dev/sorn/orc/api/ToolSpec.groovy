@@ -2,6 +2,7 @@ package dev.sorn.orc.api
 
 import dev.sorn.orc.OrcSpecification
 import dev.sorn.orc.types.Id
+import tools.jackson.databind.JsonNode
 
 class ToolSpec extends OrcSpecification {
 
@@ -26,6 +27,21 @@ class ToolSpec extends OrcSpecification {
         @Override
         Result execute(String input) {
             return Result.Success.of(input)
+        }
+
+        @Override
+        Class<String> inputType() {
+            return null
+        }
+
+        @Override
+        String parseArguments(JsonNode node) {
+            return super.parseArguments(node)
+        }
+
+        @Override
+        String inputDescription() {
+            return super.inputDescription()
         }
     }
 

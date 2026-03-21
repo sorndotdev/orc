@@ -1,6 +1,7 @@
 package dev.sorn.orc.agents;
 
 import dev.sorn.orc.DefaultAgentTestData;
+import dev.sorn.orc.StubToolRegistry;
 import dev.sorn.orc.api.LlmClient;
 import dev.sorn.orc.api.Result;
 import dev.sorn.orc.api.ToolRegistry;

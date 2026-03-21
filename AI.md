@@ -12,6 +12,7 @@
 * Never add comments to code.
 * Minimal changes to achieve result.
 * Small, focused classes, and interface segregation.
+* Hacks are never allowed.
 
 ### Code Style
 

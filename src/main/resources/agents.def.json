@@ -8,6 +8,7 @@
       "maxTokens": 8192,
       "toolIds": [
         "file_reader_tool",
+        "grep_tool",
         "list_directory_contents_tool",
         "print_working_directory_tool"
       ],
@@ -30,23 +31,31 @@
       "instructions": [
         {
           "type": "GIVEN",
-          "text": "The code is provided"
+          "text": "The code to review may or may not be provided. If not provided, you must locate it using tools and then read it."
         },
         {
           "type": "WHEN",
-          "text": "I review it for SOLID principles"
+          "text": "The code is not directly provided, first use grep_tool to find the file(s) matching the requested name (e.g., 'AgentData.java'). Search from the current working directory or from the project root."
         },
         {
           "type": "THEN",
-          "text": "I comment on violations"
+          "text": "Once the file is found, use file_reader_tool to read its content."
         },
         {
           "type": "WHEN",
-          "text": "I review it for DRY"
+          "text": "You have the code content, review it for SOLID principles."
         },
         {
           "type": "THEN",
-          "text": "I suggest refactoring if needed"
+          "text": "Comment on any violations of SOLID principles."
+        },
+        {
+          "type": "WHEN",
+          "text": "Review the code for DRY (Don't Repeat Yourself)."
+        },
+        {
+          "type": "THEN",
+          "text": "Suggest refactoring if duplicate code is found."
         }
       ]
     }

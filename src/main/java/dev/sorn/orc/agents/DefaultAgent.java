@@ -1,3 +1,4 @@
+// Path: src/main/java/dev/sorn/orc/agents/DefaultAgent.java
 package dev.sorn.orc.agents;
 
 import dev.sorn.orc.api.LlmClient;
@@ -10,6 +11,7 @@ import dev.sorn.orc.parsers.ToolCallParser;
 import dev.sorn.orc.types.AgentDefinition;
 import dev.sorn.orc.types.ToolCall;
 import io.vavr.collection.List;
+import java.nio.file.Path;
 import java.util.function.Consumer;
 
 public final class DefaultAgent extends BaseAgent {
@@ -38,10 +40,19 @@ public final class DefaultAgent extends BaseAgent {
         agentDefinition.instructions().forEach(instruction -> {
             conversation.append(instruction.type()).append(": ").append(instruction.text()).append("\n");
         });
-        conversation.append("\n## Available Tools\n");
+        conversation.append("\n## Current Working Directory\n")
+            .append(Path.of("").toAbsolutePath().normalize().toString())
+            .append("\n\n");
+        conversation.append("## Available Tools\n");
         tools().forEach(tool -> {
             conversation.append("- ").append(tool.id().value()).append(": ").append(tool.inputDescription()).append("\n");
         });
+        conversation.append("\n## Efficiency Guidelines\n");
+        conversation.append("""
+            - Use **grep_tool** to search for files by name or content (it can search recursively).
+            - Use **list_directory_contents_tool** only for listing a single directory’s immediate children (non‑recursive).
+            - Avoid calling list_directory_contents_tool repeatedly for deep searches; use grep_tool instead.
+            """);
         conversation.append("\n## Tool Usage Format\n");
         conversation.append("""
             You can use tools by outputting a tool call in the following strict format:
@@ -56,7 +67,7 @@ public final class DefaultAgent extends BaseAgent {
         conversation.append("\n## User Input\n").append(prompt).append("\n");
 
         var iteration = 0;
-        var lastToolCall = new ToolCall(null, null); // track last call to detect loops
+        var lastToolCall = new ToolCall(null, null);
         var repeatCount = 0;
 
         while (iteration < MAX_ITERATIONS) {
@@ -72,7 +83,6 @@ public final class DefaultAgent extends BaseAgent {
                 return Result.Failure.of(new OrcException("LLM returned empty response"));
             }
 
-            // Log the first 200 chars of the response for debugging
             log("Response preview: " + response.substring(0, Math.min(200, response.length())));
 
             List<ToolCall> toolCalls;
