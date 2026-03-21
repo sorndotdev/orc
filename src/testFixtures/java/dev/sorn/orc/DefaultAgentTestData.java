@@ -1,24 +1,24 @@
 package dev.sorn.orc;
 
 import dev.sorn.orc.agents.DefaultAgent;
-import dev.sorn.orc.types.AgentData;
 import dev.sorn.orc.types.AgentDefinition;
 import dev.sorn.orc.types.Id;
 import io.vavr.collection.List;
-
 import static dev.sorn.orc.agents.DefaultAgent.Builder.defaultAgent;
 import static dev.sorn.orc.types.AgentData.Builder.agentData;
 import static dev.sorn.orc.types.AgentData.Type.COLLECTION;
 import static dev.sorn.orc.types.AgentData.Type.STRING;
 import static dev.sorn.orc.types.AgentDefinition.Builder.agentDefinition;
 import static dev.sorn.orc.types.AgentRole.WORKER;
+import static dev.sorn.orc.types.BddInstruction.given;
+import static dev.sorn.orc.types.BddInstruction.then;
+import static dev.sorn.orc.types.BddInstruction.when;
 
 public interface DefaultAgentTestData {
 
     default DefaultAgent.Builder aDefaultAgent() {
         return defaultAgent()
-            .agentDefinition(anAgentDefinition()
-                .build())
+            .agentDefinition(anAgentDefinition().build())
             .toolRegistry(new StubToolRegistry())
             .llmClient(new StubLlmClient());
     }
@@ -35,8 +35,12 @@ public interface DefaultAgentTestData {
             .inputs(List.of(agentData().name("code").type(STRING).build()))
             .outputs(List.of(agentData().name("suggestions").type(COLLECTION).build()))
             .instructions(List.of(
-                "some instruction 1",
-                "some instruction 2"));
+                given("some instruction 1"),
+                when("some instruction 2"),
+                then("some instruction 3")))
+            .modelId("test-model")
+            .baseUrl("http://test")
+            .maxTokens(100);
     }
 
 }

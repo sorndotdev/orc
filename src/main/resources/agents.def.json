@@ -3,6 +3,9 @@
     {
       "id": "code_reviewer_agent",
       "role": "worker",
+      "modelId": "qwen3:14b",
+      "baseUrl": "http://127.0.0.1:11434",
+      "maxTokens": 2048,
       "toolIds": [
         "file_reader_tool",
         "list_directory_contents_tool",
@@ -11,27 +14,40 @@
       "input": [
         {
           "type": "string",
-          "name": "code",
-          "example": []
+          "name": "code"
         }
       ],
       "output": [
         {
           "type": "collection",
-          "name": "review_comment",
-          "example": []
+          "name": "review_comment"
         },
         {
           "type": "boolean",
-          "name": "review_approved",
-          "example": []
+          "name": "review_approved"
         }
       ],
       "instructions": [
-        "Check code is SOLID-compliant",
-        "Check code is DRY-compliant",
-        "Check code is tested",
-        "Check code is functional style"
+        {
+          "type": "GIVEN",
+          "text": "The code is provided"
+        },
+        {
+          "type": "WHEN",
+          "text": "I review it for SOLID principles"
+        },
+        {
+          "type": "THEN",
+          "text": "I comment on violations"
+        },
+        {
+          "type": "WHEN",
+          "text": "I review it for DRY"
+        },
+        {
+          "type": "THEN",
+          "text": "I suggest refactoring if needed"
+        }
       ]
     }
   ]

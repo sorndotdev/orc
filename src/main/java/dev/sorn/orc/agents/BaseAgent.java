@@ -7,6 +7,7 @@ import dev.sorn.orc.api.Tool;
 import dev.sorn.orc.api.ToolRegistry;
 import dev.sorn.orc.types.AgentData;
 import dev.sorn.orc.types.AgentRole;
+import dev.sorn.orc.types.BddInstruction;
 import dev.sorn.orc.types.Id;
 import io.vavr.collection.List;
 
@@ -55,7 +56,7 @@ public abstract class BaseAgent implements Agent {
     }
 
     @Override
-    public final List<String> instructions() {
+    public final List<BddInstruction> instructions() {
         return agentDefinition.instructions();
     }
 

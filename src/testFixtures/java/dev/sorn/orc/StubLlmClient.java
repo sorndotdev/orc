@@ -5,8 +5,14 @@ import dev.sorn.orc.api.Result;
 import dev.sorn.orc.api.Result.Success;
 import dev.sorn.orc.types.Id;
 
-// TODO: Implement stub BDD interface: GIVEN, WHEN, THEN
+import java.util.HashMap;
+import java.util.Map;
+
 public class StubLlmClient implements LlmClient {
+
+    private final Map<String, String> responses = new HashMap<>();
+    private String defaultResponse = "Stub LLM response";
+    private String currentPrompt;
 
     @Override
     public Id modelId() {
@@ -15,7 +21,24 @@ public class StubLlmClient implements LlmClient {
 
     @Override
     public Result<String> complete(String prompt) {
-        return Success.of("Stub LLM response");
+        String response = responses.getOrDefault(prompt, defaultResponse);
+        return Success.of(response);
     }
 
+    public StubLlmClient given(String prompt) {
+        this.currentPrompt = prompt;
+        return this;
+    }
+
+    public void willReturn(String response) {
+        if (currentPrompt == null) {
+            throw new IllegalStateException("Call given() first");
+        }
+        responses.put(currentPrompt, response);
+        currentPrompt = null;
+    }
+
+    public void setDefaultResponse(String defaultResponse) {
+        this.defaultResponse = defaultResponse;
+    }
 }

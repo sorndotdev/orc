@@ -4,11 +4,11 @@ import dev.sorn.orc.DefaultAgentTestData;
 import dev.sorn.orc.api.LlmClient;
 import dev.sorn.orc.api.ToolRegistry;
 import dev.sorn.orc.types.AgentDefinition;
+import dev.sorn.orc.types.BddInstruction;
 import dev.sorn.orc.types.Id;
 import io.vavr.collection.List;
 import nl.jqno.equalsverifier.EqualsVerifier;
 import org.junit.jupiter.api.Test;
-
 import static dev.sorn.orc.agents.DefaultAgent.Builder.defaultAgent;
 import static dev.sorn.orc.api.Result.Success;
 import static dev.sorn.orc.types.AgentRole.WORKER;
@@ -47,7 +47,7 @@ class DefaultAgentTest implements DefaultAgentTestData {
         given(definition.outputs())
             .willReturn(empty());
         given(definition.instructions())
-            .willReturn(List.of("Instruction1", "Instruction2"));
+            .willReturn(List.of(BddInstruction.given("Instruction1"), BddInstruction.when("Instruction2")));
         given(llmClient.complete(anyString()))
             .willReturn(Success.of("Some LLM response"));
 
@@ -59,9 +59,9 @@ class DefaultAgentTest implements DefaultAgentTestData {
             .should(times(1))
             .complete("""
                 ## Instructions
-                Instruction1
-                Instruction2
-                
+                GIVEN: Instruction1
+                WHEN: Instruction2
+
                 ## Prompt
                 My prompt
                 """);

@@ -8,7 +8,10 @@ public record AgentDefinition(
     List<Id> toolIds,
     List<AgentData> inputs,
     List<AgentData> outputs,
-    List<String> instructions
+    List<BddInstruction> instructions,
+    String modelId,
+    String baseUrl,
+    int maxTokens
 ) {
 
     private AgentDefinition(Builder builder) {
@@ -18,7 +21,10 @@ public record AgentDefinition(
             builder.toolIds,
             builder.inputs,
             builder.outputs,
-            builder.instructions);
+            builder.instructions,
+            builder.modelId,
+            builder.baseUrl,
+            builder.maxTokens);
     }
 
     public static final class Builder {
@@ -28,7 +34,10 @@ public record AgentDefinition(
         private List<Id> toolIds;
         private List<AgentData> inputs;
         private List<AgentData> outputs;
-        private List<String> instructions;
+        private List<BddInstruction> instructions;
+        private String modelId;
+        private String baseUrl;
+        private int maxTokens = 2048;
 
         public static Builder agentDefinition() {
             return new Builder();
@@ -59,8 +68,23 @@ public record AgentDefinition(
             return this;
         }
 
-        public Builder instructions(List<String> instructions) {
+        public Builder instructions(List<BddInstruction> instructions) {
             this.instructions = instructions;
+            return this;
+        }
+
+        public Builder modelId(String modelId) {
+            this.modelId = modelId;
+            return this;
+        }
+
+        public Builder baseUrl(String baseUrl) {
+            this.baseUrl = baseUrl;
+            return this;
+        }
+
+        public Builder maxTokens(int maxTokens) {
+            this.maxTokens = maxTokens;
             return this;
         }
 

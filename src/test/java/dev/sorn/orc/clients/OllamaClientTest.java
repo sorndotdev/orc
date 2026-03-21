@@ -24,7 +24,7 @@ public class OllamaClientTest {
     private final OllamaClient llmClient = new OllamaClient(modelId, mockHttpClient, baseUri, 512);
 
     @Test
-    void testCompleteReturnsParsedResponse() {
+    void returns_parsed_response() {
         // GIVEN
         var fakeResponse = jsonObjectNode()
             .put("id", "cmpl-645")
@@ -47,7 +47,7 @@ public class OllamaClientTest {
     }
 
     @Test
-    void testCompletePropagatesHttpFailure() {
+    void propagates_http_failure() {
         // GIVEN
         given(mockHttpClient.post(any(URI.class), any(ObjectNode.class)))
             .willReturn(Failure.of(new OrcException("http fail")));

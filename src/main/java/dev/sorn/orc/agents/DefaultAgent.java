@@ -17,7 +17,9 @@ public final class DefaultAgent extends BaseAgent {
     public Result<?> complete(String prompt) {
         final var promptJoiner = new StringJoiner("\n");
         promptJoiner.add("## Instructions");
-        agentDefinition.instructions().forEach(promptJoiner::add);
+        agentDefinition.instructions().forEach(instruction -> {
+            promptJoiner.add(instruction.type() + ": " + instruction.text());
+        });
         promptJoiner.add("");
         promptJoiner.add("## Prompt");
         promptJoiner.add(prompt);
@@ -55,7 +57,6 @@ public final class DefaultAgent extends BaseAgent {
         public DefaultAgent build() {
             return new DefaultAgent(this);
         }
-
     }
 
 }
