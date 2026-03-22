@@ -7,6 +7,7 @@ import dev.sorn.orc.api.ToolRegistry;
 import dev.sorn.orc.types.AgentData;
 import dev.sorn.orc.types.AgentDefinition;
 import dev.sorn.orc.types.AgentRole;
+import dev.sorn.orc.types.AgentTrigger;
 import dev.sorn.orc.types.BddInstruction;
 import dev.sorn.orc.types.Id;
 import io.vavr.collection.List;
@@ -36,6 +37,11 @@ public abstract class BaseAgent implements Agent {
     @Override
     public final AgentRole role() {
         return agentDefinition.role();
+    }
+
+    @Override
+    public final List<AgentTrigger> triggers() {
+        return agentDefinition.triggers();
     }
 
     @Override

@@ -1,11 +1,89 @@
 {
   "agents": [
     {
+      "id": "developer_agent",
+      "role": "worker",
+      "modelId": "qwen3:14b",
+      "baseUrl": "http://127.0.0.1:11434",
+      "maxTokens": 8192,
+      "triggers": [
+        {
+          "targetAgentId": "code_reviewer_agent",
+          "condition": "on_output",
+          "outputField": "files_modified"
+        },
+        {
+          "targetAgentId": "code_reviewer_agent",
+          "condition": "on_output",
+          "outputField": "files_created"
+        }
+      ],
+      "toolIds": [
+        "file_reader_tool",
+        "file_writer_tool",
+        "grep_tool",
+        "list_directory_contents_tool",
+        "print_working_directory_tool"
+      ],
+      "input": [
+        {
+          "type": "string",
+          "name": "task"
+        }
+      ],
+      "output": [
+        {
+          "type": "collection",
+          "name": "files_created"
+        },
+        {
+          "type": "collection",
+          "name": "files_modified"
+        }
+      ],
+      "instructions": [
+        {
+          "type": "GIVEN",
+          "text": "You are a developer agent with access to file system tools."
+        },
+        {
+          "type": "WHEN",
+          "text": "The task requires reading existing files, use grep_tool to locate them first, then file_reader_tool to read content."
+        },
+        {
+          "type": "THEN",
+          "text": "After understanding the context, implement the requested changes using file_writer_tool."
+        },
+        {
+          "type": "WHEN",
+          "text": "Creating new files, ensure parent directories exist (file_writer_tool handles this automatically)."
+        },
+        {
+          "type": "THEN",
+          "text": "Report all files created or modified in your final response."
+        },
+        {
+          "type": "GIVEN",
+          "text": "Use grep_tool for recursive searches instead of repeatedly calling list_directory_contents_tool."
+        },
+        {
+          "type": "WHEN",
+          "text": "You need to understand the project structure."
+        },
+        {
+          "type": "THEN",
+          "text": "Use print_working_directory_tool first, then list_directory_contents_tool for immediate children only."
+        }
+      ]
+    },
+    {
       "id": "code_reviewer_agent",
       "role": "worker",
       "modelId": "qwen3:14b",
       "baseUrl": "http://127.0.0.1:11434",
       "maxTokens": 8192,
+      "triggers": [
+      ],
       "toolIds": [
         "file_reader_tool",
         "grep_tool",
@@ -15,7 +93,7 @@
       "input": [
         {
           "type": "string",
-          "name": "code"
+          "name": "task"
         }
       ],
       "output": [
@@ -31,33 +109,53 @@
       "instructions": [
         {
           "type": "GIVEN",
-          "text": "The code to review may or may not be provided. If not provided, you must locate it using tools and then read it."
+          "text": "The code to review may or may not be provided in the task. If not provided, you must locate it using tools."
         },
         {
           "type": "WHEN",
-          "text": "The code is not directly provided, first use grep_tool to find the file(s) matching the requested name (e.g., 'AgentData.java'). Search from the current working directory or from the project root."
+          "text": "The code is not directly provided in the task."
         },
         {
           "type": "THEN",
-          "text": "Once the file is found, use file_reader_tool to read its content."
+          "text": "Use grep_tool to find the file(s) matching the requested name from the current working directory."
         },
         {
           "type": "WHEN",
-          "text": "You have the code content, review it for SOLID principles."
+          "text": "You have located the file(s)."
         },
         {
           "type": "THEN",
-          "text": "Comment on any violations of SOLID principles."
+          "text": "Use file_reader_tool to read the content of each file."
         },
         {
           "type": "WHEN",
-          "text": "Review the code for DRY (Don't Repeat Yourself)."
+          "text": "You have the code content."
+        },
+        {
+          "type": "THEN",
+          "text": "Review the code for SOLID principles violations and comment on any found."
+        },
+        {
+          "type": "WHEN",
+          "text": "Reviewing for DRY (Don't Repeat Yourself)."
         },
         {
           "type": "THEN",
           "text": "Suggest refactoring if duplicate code is found."
+        },
+        {
+          "type": "GIVEN",
+          "text": "Set review_approved to true only if no critical violations are found."
         }
       ]
+    }
+  ],
+  "workflows": [
+    {
+      "id": "development_workflow",
+      "description": "Standard development workflow with automatic code review",
+      "entryPoints": ["developer_agent"],
+      "useAgentTriggers": true
     }
   ]
 }

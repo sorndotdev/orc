@@ -82,7 +82,7 @@ public final class DefaultAgent extends BaseAgent {
                 return Result.Failure.of(new OrcException("LLM returned empty response"));
             }
 
-            log("Response preview: " + response.substring(0, Math.min(200, response.length())));
+            log("Response preview: " + response.substring(0, Math.min(420, response.length())));
 
             List<ToolCall> toolCalls;
             try {

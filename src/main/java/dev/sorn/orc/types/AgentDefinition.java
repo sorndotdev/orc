@@ -5,6 +5,7 @@ import io.vavr.collection.List;
 public record AgentDefinition(
     Id id,
     AgentRole role,
+    List<AgentTrigger> triggers,
     List<Id> toolIds,
     List<AgentData> inputs,
     List<AgentData> outputs,
@@ -18,6 +19,7 @@ public record AgentDefinition(
         this(
             builder.id,
             builder.role,
+            builder.triggers,
             builder.toolIds,
             builder.inputs,
             builder.outputs,
@@ -28,9 +30,9 @@ public record AgentDefinition(
     }
 
     public static final class Builder {
-
         private Id id;
         private AgentRole role;
+        private List<AgentTrigger> triggers = List.empty();
         private List<Id> toolIds;
         private List<AgentData> inputs;
         private List<AgentData> outputs;
@@ -38,6 +40,8 @@ public record AgentDefinition(
         private String modelId;
         private String baseUrl;
         private int maxTokens = 2048;
+
+        private Builder() {}
 
         public static Builder agentDefinition() {
             return new Builder();
@@ -85,6 +89,11 @@ public record AgentDefinition(
 
         public Builder maxTokens(int maxTokens) {
             this.maxTokens = maxTokens;
+            return this;
+        }
+
+        public Builder triggers(List<AgentTrigger> triggers) {
+            this.triggers = triggers;
             return this;
         }
 
